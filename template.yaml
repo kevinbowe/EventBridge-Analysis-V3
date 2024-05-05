@@ -44,7 +44,7 @@ Resources:
                 - transaction
               detail:
                 location:
-                  - "prefix": "NY-"
+                  - prefix: NY-
 
   atmConsumerCase3Fn:
     Type: AWS::Serverless::Function
@@ -63,37 +63,29 @@ Resources:
                 - transaction
               detail:
                 result:
-                  - "anything-but": "approved"
+                  - anything-but: approved
 
   EventRuleCase1:
     Type: AWS::Events::Rule
     Properties:
-      Description: "Approved transactions"
+      Description: Approved transactions
       EventPattern:
         source:
-          - "custom.myATMapp"
+          - custom.myATMapp
         detail-type:
           - transaction
         detail:
           result:
-            - "approved"
-      State: "ENABLED"
+            - approved
+      State: ENABLED
       Targets:
-        -
-          Arn:
-            Fn::GetAtt:
-              - "atmConsumerCase1Fn"
-              - "Arn"
-          Id: "atmConsumerTarget1"
+        - Arn: !GetAtt atmConsumerCase1Fn.Arn
+          Id: atmConsumerTarget1
 
   PermissionForEventsToInvokeLambda:
     Type: AWS::Lambda::Permission
     Properties:
-      FunctionName:
-        Ref: "atmConsumerCase1Fn"
-      Action: "lambda:InvokeFunction"
-      Principal: "events.amazonaws.com"
-      SourceArn:
-        Fn::GetAtt:
-          - "EventRuleCase1"
-          - "Arn"
+      FunctionName: !Ref atmConsumerCase1Fn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt EventRuleCase1.Arn
